@@ -2,9 +2,20 @@ import joblib
 import pandas as pd
 
 # MODEL_PATH = "models/predict_freight_model.pkl"
-MODEL_PATH = r"C:\Users\nitin\Programming\Project\Untitled Folder 1\freight_cost_prediction\models\predict_freight_model.pkl"
+# MODEL_PATH = r"C:\Users\nitin\Programming\Project\Untitled Folder 1\freight_cost_prediction\models\predict_freight_model.pkl"
 
-def load_model(model_path: str = MODEL_PATH):
+import os
+
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+
+model_path = os.path.abspath(
+    os.path.join(
+        BASE_DIR,
+        "../freight_cost_prediction/models/predict_freight_model.pkl"
+    )
+)
+
+def load_model(model_path=model_path):
     """
     Load trained freight cost prediction model.
     """

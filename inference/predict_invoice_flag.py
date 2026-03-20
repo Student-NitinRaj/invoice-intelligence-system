@@ -3,8 +3,19 @@ import joblib
 import pandas as pd
 
 # Dynamic correct path
-BASE_DIR = Path(__file__).resolve().parent
-MODEL_PATH = BASE_DIR / "models" / "predict_flag_invoice.pkl"
+# BASE_DIR = Path(__file__).resolve().parent
+# MODEL_PATH = BASE_DIR / "models" / "predict_flag_invoice.pkl"
+
+import os
+
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+
+model_path = os.path.abspath(
+    os.path.join(
+        BASE_DIR,
+        "../Invoice_flagging/models/predict_flag_invoice.pkl"
+    )
+)
 
 
 def load_model(model_path: Path = MODEL_PATH):
