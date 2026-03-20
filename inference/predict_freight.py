@@ -4,15 +4,17 @@ import pandas as pd
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
-model_path = os.path.abspath(os.path.join(
-    BASE_DIR,
-    "..",
-    "freight_cost_prediction",
-    "models",
-    "predict_freight_model.pkl"
-))
+model_path = os.path.abspath(
+    os.path.join(
+        BASE_DIR,
+        "..",
+        "freight_cost_prediction",
+        "models",
+        "predict_freight_model.pkl"
+    )
+)
 
-print("Freight Model Path:", model_path)  # Debug
+print("FINAL PATH:", model_path)  # DEBUG
 
 
 def load_model():
@@ -28,7 +30,6 @@ def predict_freight_cost(input_data):
     model = load_model()
 
     input_df = pd.DataFrame(input_data)
-
     input_df["Predicted_Freight"] = model.predict(input_df).round(2)
 
     return input_df
