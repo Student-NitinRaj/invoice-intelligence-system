@@ -76,19 +76,25 @@ to support budgeting, forecasting, and vendor negotiations.
         submit_freight = st.form_submit_button("🚀 Predict Freight Cost")
 
     if submit_freight:
-        input_data = {
-            "Quantity": [quantity],
-            "Dollars": [dollars]
-        }
+        try:
+            # ✅ IMPORTANT: Use SAME feature names as training
+            input_df = pd.DataFrame([[quantity, dollars]],
+                                    columns=["quantity", "invoice_dollars"])
 
-        prediction = predict_freight_cost(input_data)["Predicted_Freight"]
+            # Prediction
+            result_df = predict_freight_cost(input_df)
 
-        st.success("Prediction completed successfully!")
+            prediction = result_df["Predicted_Freight"].values[0]
 
-        st.metric(
-            label="📊 Estimated Freight Cost",
-            value=f"${prediction[0]:,.2f}"
-        )
+            st.success("Prediction completed successfully!")
+
+            st.metric(
+                label="📊 Estimated Freight Cost",
+                value=f"${prediction:,.2f}"
+            )
+
+        except Exception as e:
+            st.error(f"Error: {e}")
 
 
 # =========================================================
@@ -120,18 +126,32 @@ based on abnormal cost, freight, or delivery patterns.
         submit_flag = st.form_submit_button("🚨 Evaluate Invoice Risk")
 
     if submit_flag:
-        input_data = {
-            "invoice_quantity": [invoice_quantity],
-            "invoice_dollars": [invoice_dollars],
-            "Freight": [freight],
-            "total_item_quantity": [total_item_quantity],
-            "total_item_dollars": [total_item_dollars]
-        }
+        try:
+            # ✅ Match training feature names EXACTLY
+            input_df = pd.DataFrame([[
+                invoice_quantity,
+                invoice_dollars,
+                freight,
+                total_item_quantity,
+                total_item_dollars
+            ]],
+            columns=[
+                "invoice_quantity",
+                "invoice_dollars",
+                "freight",
+                "total_item_quantity",
+                "total_item_dollars"
+            ])
 
-        flag_prediction = predict_invoice_flag(input_data)["Predicted_Flag"]
-        is_flagged = bool(flag_prediction[0])
+            result_df = predict_invoice_flag(input_df)
 
-        if is_flagged:
-            st.error("🚨 Invoice requires **MANUAL APPROVAL**")
-        else:
-            st.success("✅ Invoice is **SAFE for Auto-Approval**")
+            flag_prediction = result_df["Predicted_Flag"].values[0]
+            is_flagged = bool(flag_prediction)
+
+            if is_flagged:
+                st.error("🚨 Invoice requires **MANUAL APPROVAL**")
+            else:
+                st.success("✅ Invoice is **SAFE for Auto-Approval**")
+
+        except Exception as e:
+            st.error(f"Error: {e}")
