@@ -31,7 +31,10 @@ def predict_freight_cost(input_data):
     else:
         input_df = input_data.copy()
 
-    # ✅ FINAL FIX: SAME as training (lowercase)
+    # ✅ FORCE LOWERCASE (FINAL FIX)
+    input_df.columns = input_df.columns.str.lower()
+
+    # ✅ MATCH TRAINING FEATURES
     input_df = input_df[["quantity", "invoice_dollars"]]
 
     prediction = model.predict(input_df)
