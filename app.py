@@ -16,7 +16,6 @@ st.set_page_config(
     layout="wide"
 )
 
-
 # =========================================================
 # Header Section
 # =========================================================
@@ -31,7 +30,6 @@ This internal analytics portal leverages machine learning to:
 """)
 
 st.divider()
-
 
 # =========================================================
 # Sidebar
@@ -60,8 +58,7 @@ if selected_model == "Freight Cost Prediction":
 
     st.markdown("""
 **Objective:**  
-Predict freight cost for a vendor invoice using **Quantity** and **Invoice Dollars**
-to support budgeting, forecasting, and vendor negotiations.
+Predict freight cost using **Quantity** and **Invoice Dollars**
 """)
 
     with st.form("freight_form"):
@@ -77,12 +74,13 @@ to support budgeting, forecasting, and vendor negotiations.
 
     if submit_freight:
         try:
-            # ✅ IMPORTANT: Use SAME feature names as training
-            input_df = pd.DataFrame([[quantity, dollars]],
-                                    columns=["quantity", "invoice_dollars"])
+            # ✅ FINAL FIX: SAME as training
+            input_data = {
+                "Quantity": [quantity],
+                "Dollars": [dollars]
+            }
 
-            # Prediction
-            result_df = predict_freight_cost(input_df)
+            result_df = predict_freight_cost(input_data)
 
             prediction = result_df["Predicted_Freight"].values[0]
 
@@ -105,8 +103,7 @@ else:
 
     st.markdown("""
 **Objective:**  
-Predict whether a vendor invoice should be **flagged for manual approval**
-based on abnormal cost, freight, or delivery patterns.
+Predict whether invoice needs manual approval
 """)
 
     with st.form("invoice_flag_form"):
@@ -127,7 +124,6 @@ based on abnormal cost, freight, or delivery patterns.
 
     if submit_flag:
         try:
-            # ✅ Match training feature names EXACTLY
             input_df = pd.DataFrame([[
                 invoice_quantity,
                 invoice_dollars,
@@ -145,13 +141,12 @@ based on abnormal cost, freight, or delivery patterns.
 
             result_df = predict_invoice_flag(input_df)
 
-            flag_prediction = result_df["Predicted_Flag"].values[0]
-            is_flagged = bool(flag_prediction)
+            flag = result_df["Predicted_Flag"].values[0]
 
-            if is_flagged:
-                st.error("🚨 Invoice requires **MANUAL APPROVAL**")
+            if flag:
+                st.error("🚨 Invoice requires MANUAL APPROVAL")
             else:
-                st.success("✅ Invoice is **SAFE for Auto-Approval**")
+                st.success("✅ Invoice is SAFE")
 
         except Exception as e:
             st.error(f"Error: {e}")

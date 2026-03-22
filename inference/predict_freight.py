@@ -31,7 +31,13 @@ def predict_freight_cost(input_data):
     else:
         input_df = input_data.copy()
 
-    # ✅ FINAL FIX: SAME names as training
+    # ✅ HANDLE BOTH CASES (important fix)
+    input_df = input_df.rename(columns={
+        "quantity": "Quantity",
+        "invoice_dollars": "Dollars"
+    })
+
+    # ✅ FINAL REQUIRED FORMAT
     input_df = input_df[["Quantity", "Dollars"]]
 
     prediction = model.predict(input_df)
