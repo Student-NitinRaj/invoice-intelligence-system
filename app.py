@@ -76,9 +76,9 @@ Predict freight cost using **Quantity** and **Invoice Dollars**
         try:
             # ✅ FINAL FIX: SAME as training
             input_data = {
-                "Quantity": [quantity],
-                "Dollars": [dollars]
-            }
+    "quantity": [quantity],
+    "invoice_dollars": [dollars]
+}
 
             result_df = predict_freight_cost(input_data)
 
