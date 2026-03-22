@@ -2,38 +2,57 @@ import os
 import joblib
 import pandas as pd
 
+# =========================================================
+# Model Path Setup (Robust for Streamlit Cloud)
+# =========================================================
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
-model_path = os.path.abspath(
-    os.path.join(
-        BASE_DIR,
-        "..",
-        "freight_cost_prediction",
-        "models",
-        "predict_freight_model.pkl"
-    )
+MODEL_PATH = os.path.join(
+    BASE_DIR,
+    "..",
+    "freight_cost_prediction",
+    "models",
+    "predict_freight_model.pkl"
 )
 
-print("FINAL PATH:", model_path)  # DEBUG
-
-
+# =========================================================
+# Load Model
+# =========================================================
 def load_model():
-    if not os.path.exists(model_path):
-        raise FileNotFoundError(f"Model not found at {model_path}")
-
-    with open(model_path, "rb") as f:
+    if not os.path.exists(MODEL_PATH):
+        raise FileNotFoundError(f"Model not found at {MODEL_PATH}")
+    
+    with open(MODEL_PATH, "rb") as f:
         model = joblib.load(f)
+    
     return model
 
 
+# =========================================================
+# Prediction Function
+# =========================================================
 def predict_freight_cost(input_data):
     model = load_model()
 
-    input_df = pd.DataFrame(input_data)
+    # Convert input to DataFrame safely
+    if isinstance(input_data, dict):
+        input_df = pd.DataFrame(input_data)
+    else:
+        input_df = input_data.copy()
 
-    # ✅ FIX: correct feature order
-    input_df = input_df[["Quantity", "Dollars"]]
+    # ✅ CRITICAL FIX: match training feature names
+    input_df = input_df.rename(columns={
+        "Quantity": "quantity",
+        "Dollars": "invoice_dollars"
+    })
 
-    input_df["Predicted_Freight"] = model.predict(input_df)
+    # ✅ Ensure correct order
+    input_df = input_df[["quantity", "invoice_dollars"]]
+
+    # Prediction
+    predictions = model.predict(input_df)
+
+    # Output
+    input_df["Predicted_Freight"] = predictions
 
     return input_df
