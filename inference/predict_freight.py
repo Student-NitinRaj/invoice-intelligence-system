@@ -31,13 +31,17 @@ def predict_freight_cost(input_data):
     else:
         input_df = input_data.copy()
 
-    # ✅ FORCE LOWERCASE (FINAL FIX)
-    input_df.columns = input_df.columns.str.lower()
+    # The model was trained with a single feature "Dollars"
+    # We map the incoming data to match what the model expects
+    model_input = pd.DataFrame()
+    if "invoice_dollars" in input_df.columns:
+        model_input["Dollars"] = input_df["invoice_dollars"]
+    elif "Dollars" in input_df.columns:
+        model_input["Dollars"] = input_df["Dollars"]
+    else:
+        model_input["Dollars"] = input_df.iloc[:, 0]
 
-    # ✅ MATCH TRAINING FEATURES
-    input_df = input_df[["quantity", "invoice_dollars"]]
-
-    prediction = model.predict(input_df)
+    prediction = model.predict(model_input)
 
     input_df["Predicted_Freight"] = prediction
 
